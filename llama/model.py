@@ -20,7 +20,7 @@ from torch import nn
 class ModelArgs:
     dim: int = 4096
     n_layers: int = 32
-    n_heads: int = 32
+    n_heads: int = 32                           # heads 的数量
     n_kv_heads: Optional[int] = None
     vocab_size: int = -1  # defined later by tokenizer
     multiple_of: int = 256  # make SwiGLU hidden layer size multiple of large power of 2
@@ -267,7 +267,7 @@ class Attention(nn.Module):
             torch.Tensor: Output tensor after attention.
 
         """
-        bsz, seqlen, _ = x.shape
+        bsz, seqlen, _ = x.shape                         # [batch_size, seq_len, embedding_dim]
         xq, xk, xv = self.wq(x), self.wk(x), self.wv(x)
 
         xq = xq.view(bsz, seqlen, self.n_local_heads, self.head_dim)
@@ -463,7 +463,7 @@ class Transformer(nn.Module):
             torch.Tensor: Output logits after applying the Transformer model.
 
         """
-        _bsz, seqlen = tokens.shape
+        _bsz, seqlen = tokens.shape         # [batch_size, seq_len]
         h = self.tok_embeddings(tokens)
         self.freqs_cis = self.freqs_cis.to(h.device)
         freqs_cis = self.freqs_cis[start_pos : start_pos + seqlen]
