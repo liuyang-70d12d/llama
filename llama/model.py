@@ -400,6 +400,8 @@ class TransformerBlock(nn.Module):
             torch.Tensor: Output tensor after applying attention and feedforward layers.
 
         """
+        ## 注意 Attention 和 FFN 都是残差连接结构，所以 Attention 和 FFN 的输出
+        ## shape 一定也是 [batch_size, seq_len, embedding_dim]
         h = x + self.attention(
             self.attention_norm(x), start_pos, freqs_cis, mask
         )
@@ -463,8 +465,8 @@ class Transformer(nn.Module):
             torch.Tensor: Output logits after applying the Transformer model.
 
         """
-        _bsz, seqlen = tokens.shape         # [batch_size, seq_len]
-        h = self.tok_embeddings(tokens)
+        _bsz, seqlen = tokens.shape         # tokens shape: [batch_size, seq_len]
+        h = self.tok_embeddings(tokens)     # h shape: [batch_size, seq_len, embedding_dim]
         self.freqs_cis = self.freqs_cis.to(h.device)
         freqs_cis = self.freqs_cis[start_pos : start_pos + seqlen]
 
